@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Evaluating Server Trust
 
+// 根据 serverTrust 和 domain 来检验服务器发来的证书是否可信
 - (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust
                   forDomain:(nullable NSString *)domain;
 
