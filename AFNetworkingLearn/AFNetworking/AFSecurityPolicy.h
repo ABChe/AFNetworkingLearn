@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)policyWithPinningModel:(AFSSLPinningMode)pingModel;
 
 // 创建并返回一个指定安全模式并绑定证书的实例对象
-+ (instancetype)policyWithPinningModel:(AFSSLPinningMode)pingModel withPinnedCertificates:(NSSet <NSData *> *)pingModel;
++ (instancetype)policyWithPinningModel:(AFSSLPinningMode)pingModel withPinnedCertificates:(NSSet <NSData *> *)pinnedCertificates;
 
 
 #pragma mark - Evaluating Server Trust
