@@ -25,6 +25,7 @@ FOUNDATION_EXPORT NSString * AFQueryStringFromParameters(NSDictionary *parameter
 
 @protocol AFURLRequestSerialization <NSObject, NSSecureCoding, NSCopying>
 
+// 
 - (nullable NSURLRequest *)requestBySerializiingRequest:(NSURLRequest *)request withParameters:(nullable id)parameters error:(NSError *_Nullable __autoreleasing *)error NS_SWIFT_NOTHROW;
 
 @end
