@@ -142,6 +142,70 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
     return mutableQueryStringComponents;
 }
 
+#pragma mark -
+
+static NSString * AFCreateMultipartFormBoundary() {
+    return [NSString stringWithFormat:@"Boundary+%08X%08X", arc4random(), arc4random()];
+}
+
+static NSString * const kAFMultipartFormCRLF = @"\r\n";
+
+static inline NSString * AFMultipartFormInitialBoundary(NSString *boundary) {
+    return [NSString stringWithFormat:@"--%@%@", boundary, kAFMultipartFormCRLF];
+}
+
+static inline NSString * AFMultipartFormEncapsulationBoundary(NSString *boundary) {
+    return [NSString stringWithFormat:@"%@--%@%@", kAFMultipartFormCRLF, boundary, kAFMultipartFormCRLF];
+}
+
+static inline NSString * AFMultipartFormFinalBoundary(NSString *boundary) {
+    return [NSString stringWithFormat:@"%@--%@--%@", kAFMultipartFormCRLF, boundary, kAFMultipartFormCRLF];
+}
+
+static inline NSString * AFContentTypeForPathExtension(NSString *extension) {
+    NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)extension, NULL);
+    NSString *contentType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
+    if (!contentType) {
+        return @"application/octet-stream";
+    } else {
+        return contentType;
+    }
+}
+
+NSUInteger const kAFUploadStream3GSuggestedPacketSize = 1024 * 16;
+NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
+
+@interface AFHTTPBodyPart : NSObject
+// 编码方式
+@property (nonatomic, assign) NSStringEncoding stringEncoding;
+// 头
+@property (nonatomic, strong) NSDictionary *headers;
+// 边界
+@property (nonatomic, copy) NSString *boundary;
+// 主体内容
+@property (nonatomic, strong) id body;
+// 主体大小
+@property (nonatomic, assign) unsigned long long bodyContentLength;
+// 流
+@property (nonatomic, strong) NSInputStream *inputStream;
+
+// 是够有初始边界
+@property (nonatomic, assign) BOOL hasInitialBoundary;
+// 是否有结束边界
+@property (nonatomic, assign) BOOL hasFinalBoundary;
+
+// body 是否有可用字节
+@property (readonly, nonatomic, assign, getter=hasBytesAvailable) BOOL bytesAvailable;
+// 长度
+@property (readonly, nonatomic, assign) unsigned long long contentLength;
+
+// 读取数据
+- (NSInteger)read:(uint8_t)buffer
+        maxLength:(NSUInteger)length;
+@end
+
+
+
 @implementation AFURLRequestSerialization
 
 
